@@ -1,0 +1,157 @@
+#  通用基础 .gitignore
+#  适用于：多语言项目 + AI 辅助编程（Continue）
+
+
+# 密钥 & 证书
+.env
+.env.*
+!.env.example
+!.env.*.example
+.env.docker
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+*.jks
+secrets/
+credentials/
+*_rsa
+*_rsa.pub
+*_ed25519
+*_ed25519.pub
+
+
+# Continue
+.continue/
+
+# Cursor
+.cursor/
+.cursor-cache/
+
+# Copilot & Aider
+.copilot/
+.aider.conf.yml
+.aider.local.yml
+
+# 通用 AI 上下文文件
+.ai-context/
+llm-context/
+
+
+# IDE
+.idea/
+.settings/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+*.swp
+*.swo
+*~
+*.suo
+*.user
+.vs/
+
+
+# 操作系统
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+Icon\r
+ehthumbs.db
+$RECYCLE.BIN/
+
+
+# 日志 & 临时文件
+*.log
+*.tmp
+*.bak
+*.cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+
+# C / C++
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+*.ilk
+*.pdb
+*.idb
+*.exp
+*.lib
+*.orig
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+compile_commands.json
+
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+venv/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+
+# Node.js
+node_modules/
+.next/
+.nuxt/
+.turbo/
+*.tsbuildinfo
+
+# pnpm / yarn berry
+.pnpm-store/
+.yarn/cache
+.yarn/unplugged
+.pnp.*
+
+
+# 构建产物
+dist/
+build/
+out/
+coverage/
+
+
+# Docker
+docker-compose.override.yml
+
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+!*.tfvars.example
+
+
+# 数据库本地文件
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
