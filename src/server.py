@@ -13,7 +13,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 USER_DB_FILE = os.path.join(DATA_DIR, 'users.json')
 
 online_users = {}
-lock = threading.Lock()
+lock = threading.RLock()
 
 def load_users():
     if os.path.exists(USER_DB_FILE):
