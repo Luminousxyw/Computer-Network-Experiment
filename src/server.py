@@ -4,14 +4,17 @@ import json
 import os
 from datetime import datetime
 
-HOST = '127.0.0.1'          # 只允许本机连接
+HOST = '127.0.0.1'
 PORT = 12345
-USER_DB_FILE = 'users.json'
 
-online_users = {}            # {username: socket}
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(SCRIPT_DIR, '..', 'out', 'data')
+os.makedirs(DATA_DIR, exist_ok=True)
+USER_DB_FILE = os.path.join(DATA_DIR, 'users.json')
+
+online_users = {}
 lock = threading.Lock()
 
-# 用户数据持久化（明文，方便演示）
 def load_users():
     if os.path.exists(USER_DB_FILE):
         with open(USER_DB_FILE, 'r', encoding='utf-8') as f:
@@ -22,7 +25,6 @@ def save_users(users):
     with open(USER_DB_FILE, 'w', encoding='utf-8') as f:
         json.dump(users, f, indent=2, ensure_ascii=False)
 
-# 协议消息收发（4字节长度前缀解决粘包）
 def recv_msg(sock):
     raw_len = sock.recv(4)
     if not raw_len:
@@ -41,7 +43,6 @@ def send_msg(sock, msg_dict):
     length = len(data)
     sock.sendall(length.to_bytes(4, 'big') + data)
 
-# 广播与转发 
 def broadcast_online(username):
     msg = {'type': 'response', 'content': f'{username} 上线了'}
     with lock:
@@ -96,7 +97,6 @@ def broadcast_group(msg):
                 except:
                     pass
 
-# 客户端处理线程 
 def handle_client(conn, addr):
     username = None
     try:
@@ -105,7 +105,6 @@ def handle_client(conn, addr):
             if not msg:
                 break
             msg_type = msg.get('type')
-            # 注册 
             if msg_type == 'register':
                 users = load_users()
                 new_user = msg['sender']
@@ -115,10 +114,9 @@ def handle_client(conn, addr):
                 elif new_user in users:
                     send_msg(conn, {'type': 'response', 'content': '用户名已存在'})
                 else:
-                    users[new_user] = password   # 明文存储，便于演示
+                    users[new_user] = password
                     save_users(users)
                     send_msg(conn, {'type': 'response', 'content': '注册成功，请登录'})
-            # 登录 
             elif msg_type == 'login':
                 users = load_users()
                 user = msg['sender']
@@ -134,21 +132,17 @@ def handle_client(conn, addr):
                             broadcast_online(user)
                 else:
                     send_msg(conn, {'type': 'response', 'content': '用户名或密码错误'})
-            # 私聊
             elif msg_type == 'private':
                 if username:
                     msg['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     forward_private(msg)
-            # 群聊 
             elif msg_type == 'group':
                 if username:
                     msg['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     broadcast_group(msg)
-            # 在线列表
             elif msg_type == 'list':
                 if username:
                     send_online_list(conn)
-            # 退出
             elif msg_type == 'logout':
                 break
     except Exception as e:
@@ -161,13 +155,13 @@ def handle_client(conn, addr):
         conn.close()
         print(f'客户端 {addr} 断开连接')
 
-# 主入口
 if __name__ == '__main__':
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((HOST, PORT))
     server.listen(100)
-    print(f'服务端已启动，仅监听本机 {HOST}:{PORT}')
+    print(f'服务端启动，监听 {HOST}:{PORT}（仅本机可访问）')
+    print(f'用户数据保存至: {USER_DB_FILE}')
     try:
         while True:
             conn, addr = server.accept()
