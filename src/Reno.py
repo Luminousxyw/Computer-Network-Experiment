@@ -109,6 +109,6 @@ class TCPReno:
 
 if __name__ == "__main__":
     reno = TCPReno(mss=1, rtt=0.1)
-    reno.simulate(duration=40.0, loss_rate=0.05)
+    reno.simulate(duration=40.0, loss_rate=0.01)
     reno.plot()
     reno.print_stats()
